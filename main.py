@@ -51,6 +51,10 @@ def trigger_news():
     title, desc, url, age = get_ronnie_radke_news()
     send_ronnie_radke_news(title, desc, url, age)
     return "Sent!", 200
+  
+@app.route("/", methods=["GET"])
+def ping():
+    return "Pong!", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
