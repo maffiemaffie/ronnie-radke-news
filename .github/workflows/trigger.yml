@@ -1,0 +1,14 @@
+name: Daily Ronnie Radke News Trigger
+
+on:
+  schedule:
+    - cron: "00 16 * * *"  # Runs every day at 12:00 EST
+  workflow_dispatch:       # So you can also run it manually
+
+jobs:
+  ping_webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /trigger endpoint
+        run: |
+          curl -X GET "${{ secrets.TRIGGER_URL }}"
