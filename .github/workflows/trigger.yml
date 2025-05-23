@@ -14,6 +14,15 @@ jobs:
   ping_webhook:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger endpoint
+      - name: Determine endpoint
+        id: set-endpoint
         run: |
-          curl -X GET "${{ secrets.BASE_URL }}${{ github.event.inputs.endpoint || '/trigger' }}"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "endpoint=${{ secrets.SCHEDULE_ENDPOINT }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "endpoint=${{ github.event.inputs.endpoint || '/trigger' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ping endpoint
+        run: |
+          curl -X GET "${{ secrets.BASE_URL }}${{ steps.set-endpoint.outputs.endpoint }}"
