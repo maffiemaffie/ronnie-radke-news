@@ -2,6 +2,7 @@ from flask import Flask
 import requests
 import os
 import html
+import random
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -9,7 +10,7 @@ app = Flask(__name__)
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 BRAVE_TOKEN = os.environ["BRAVE_TOKEN"]
 
-def get_ronnie_radke_news():
+def get_ronnie_radke_news(i = 0):
     response = requests.get(
         "https://api.search.brave.com/res/v1/web/search",
         headers={
@@ -26,7 +27,7 @@ def get_ronnie_radke_news():
         },
     ).json()
 
-    result = response["news"]["results"][0]
+    result = response["news"]["results"][i]
     title = result["title"]
     description = result["description"]
     description = html.unescape(description)
@@ -57,7 +58,14 @@ def trigger_news():
     title, desc, url, age = get_ronnie_radke_news()
     send_ronnie_radke_news(title, desc, url, age)
     return "Sent!", 200
-  
+
+@app.route("/random", methods=["GET"])
+def trigger_random_news():
+    random_index = random.randint(0, 5)
+    title, desc, url, age = get_ronnie_radke_news(random_index)
+    send_ronnie_radke_news(title, desc, url, age)
+    return "Sent!", 200
+
 @app.route("/", methods=["GET"])
 def ping():
     return "Pong!", 200
