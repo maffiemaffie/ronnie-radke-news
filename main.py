@@ -1,6 +1,9 @@
 from flask import Flask
 import requests
 import os
+import html
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
@@ -25,7 +28,10 @@ def get_ronnie_radke_news():
 
     result = response["news"]["results"][0]
     title = result["title"]
-    description = result["description"].replace("<strong>", "**").replace("</strong>", "**")
+    description = result["description"]
+    description = html.unescape(description)
+    description = description.replace("<strong>", "**").replace("</strong>", "**")
+    description = description.replace("<em>", "*").replace("</strong>", "*")
     url = result["url"]
     age = result["page_age"]
     return title, description, url, age
@@ -57,4 +63,4 @@ def ping():
     return "Pong!", 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5050)))
