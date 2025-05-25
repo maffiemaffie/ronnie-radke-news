@@ -10,9 +10,38 @@ app = Flask(__name__)
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 BRAVE_TOKEN = os.environ["BRAVE_TOKEN"]
 
-def get_ronnie_radke_news(i = 0):
+def get_random_ronnie_radke_news():
     response = requests.get(
-        "https://api.search.brave.com/res/v1/web/search",
+        "https://api.search.brave.com/res/v1/news/search",
+        headers={
+            "Accept": "application/json",
+            "Accept-Encoding": "gzip",
+            "x-subscription-token": BRAVE_TOKEN
+        },
+        params={
+            "q": "ronnie radke news",
+            "count": "10",
+            "safesearch": "off",
+            "freshness": "pd",
+            "result_filter": "news"
+        },
+    ).json()
+
+    index = random.randint(0, len(response["results"]) - 1)
+    result = response["results"][index]
+    title = result["title"]
+    description = result["description"]
+    description = html.unescape(description)
+    description = description.replace("<strong>", "**").replace("</strong>", "**")
+    description = description.replace("<em>", "*").replace("</strong>", "*")
+    thumbnail = result["thumbnail"]["src"]
+    url = result["url"]
+    age = result["page_age"]
+    return title, description, url, age, thumbnail
+
+def get_ronnie_radke_news():
+    response = requests.get(
+        "https://api.search.brave.com/res/v1/news/search",
         headers={
             "Accept": "application/json",
             "Accept-Encoding": "gzip",
@@ -27,17 +56,18 @@ def get_ronnie_radke_news(i = 0):
         },
     ).json()
 
-    result = response["news"]["results"][i]
+    result = response["results"][0]
     title = result["title"]
     description = result["description"]
     description = html.unescape(description)
     description = description.replace("<strong>", "**").replace("</strong>", "**")
     description = description.replace("<em>", "*").replace("</strong>", "*")
+    thumbnail = result["thumbnail"]["src"]
     url = result["url"]
     age = result["page_age"]
-    return title, description, url, age
+    return title, description, url, age, thumbnail
 
-def send_ronnie_radke_news(title, description, url, age):
+def send_ronnie_radke_news(title, description, url, age, thumbnail):
     requests.post(
         WEBHOOK_URL,
         json={
@@ -48,22 +78,24 @@ def send_ronnie_radke_news(title, description, url, age):
                 "url": url,
                 "color": 16711680,
                 "footer": {"text": "Ronnie Radke Updates"},
-                "timestamp": age
+                "timestamp": age,
+                "thumbnail": {
+                    "url": thumbnail,
+                },
             }]
         }
     )
 
 @app.route("/trigger", methods=["GET"])
 def trigger_news():
-    title, desc, url, age = get_ronnie_radke_news()
-    send_ronnie_radke_news(title, desc, url, age)
+    title, desc, url, age, thumbnail = get_ronnie_radke_news()
+    send_ronnie_radke_news(title, desc, url, age, thumbnail)
     return "Sent!", 200
 
 @app.route("/random", methods=["GET"])
 def trigger_random_news():
-    random_index = random.randint(0, 5)
-    title, desc, url, age = get_ronnie_radke_news(random_index)
-    send_ronnie_radke_news(title, desc, url, age)
+    title, desc, url, age, thumbnail = get_random_ronnie_radke_news()
+    send_ronnie_radke_news(title, desc, url, age, thumbnail)
     return "Sent!", 200
 
 @app.route("/", methods=["GET"])
