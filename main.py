@@ -5,7 +5,6 @@ import random
 from dotenv import load_dotenv
 load_dotenv()
 
-app = Flask(__name__)
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 BRAVE_TOKEN = os.environ["BRAVE_TOKEN"]
 
