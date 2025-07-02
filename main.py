@@ -86,21 +86,10 @@ def send_ronnie_radke_news(title, description, url, age, thumbnail):
         }
     )
 
-@app.route("/trigger", methods=["GET"])
-def trigger_news():
-    title, desc, url, age, thumbnail = get_ronnie_radke_news()
-    send_ronnie_radke_news(title, desc, url, age, thumbnail)
-    return "Sent!", 200
-
-@app.route("/random", methods=["GET"])
-def trigger_random_news():
-    title, desc, url, age, thumbnail = get_random_ronnie_radke_news()
-    send_ronnie_radke_news(title, desc, url, age, thumbnail)
-    return "Sent!", 200
-
-@app.route("/", methods=["GET"])
-def ping():
-    return "Pong!", 200
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5050)))
+    random_mode = os.environ.get("RANDOM", "false").lower() == "true"
+    if (random_mode):
+        news = get_random_ronnie_radke_news()
+    else:
+        news = get_ronnie_radke_news()
+    send_ronnie_radke_news(*news)

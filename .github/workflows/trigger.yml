@@ -5,24 +5,29 @@ on:
     - cron: "00 16 * * *"  # 12:00 EST
   workflow_dispatch:
     inputs:
-      endpoint:
-        description: "Endpoint to ping (e.g. /trigger, /random)"
+      random:
+        description: "Send a random news item?"
         required: false
-        default: "/trigger"
+        default: "false"
 
 jobs:
-  ping_webhook:
+  run-news-bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine endpoint
-        id: set-endpoint
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "endpoint=${{ secrets.SCHEDULE_ENDPOINT }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "endpoint=${{ github.event.inputs.endpoint || '/trigger' }}" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Ping endpoint
-        run: |
-          curl -X GET "${{ secrets.BASE_URL }}${{ steps.set-endpoint.outputs.endpoint }}"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+
+      - name: Run news bot
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          BRAVE_TOKEN: ${{ secrets.BRAVE_TOKEN }}
+          RANDOM: ${{ github.event.inputs.random || 'false' }}
+        run: python send_news.py
