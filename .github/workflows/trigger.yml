@@ -30,4 +30,4 @@ jobs:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           BRAVE_TOKEN: ${{ secrets.BRAVE_TOKEN }}
           RANDOM: ${{ github.event.inputs.random || 'false' }}
-        run: python send_news.py
+        run: python main.py
