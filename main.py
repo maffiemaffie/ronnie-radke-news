@@ -17,7 +17,7 @@ def get_random_ronnie_radke_news():
             "x-subscription-token": BRAVE_TOKEN
         },
         params={
-            "q": "ronnie radke news",
+            "q": "\"ronnie radke\" news",
             "count": "10",
             "safesearch": "off",
             "freshness": "pd",
