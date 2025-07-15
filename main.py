@@ -46,10 +46,10 @@ def get_ronnie_radke_news():
             "x-subscription-token": BRAVE_TOKEN
         },
         params={
-            "q": "ronnie radke news",
+            "q": "\"ronnie radke\"",
             "count": "1",
             "safesearch": "off",
-            "freshness": "pd",
+            "freshness": "pw",
             "result_filter": "news"
         },
     ).json()
