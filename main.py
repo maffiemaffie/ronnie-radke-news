@@ -20,7 +20,7 @@ def get_random_ronnie_radke_news():
             "q": "\"ronnie radke\" news",
             "count": "10",
             "safesearch": "off",
-            "freshness": "pd",
+            "freshness": "pw",
             "result_filter": "news"
         },
     ).json()
